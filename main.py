@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-
+import csv
 import requests
 from bs4 import BeautifulSoup
 
@@ -21,10 +21,19 @@ def get_total_pages(html):
 
 
 def write_file(data):
-    with open('avito.txt', 'a', encoding="utf-8") as f:
-        info = f"{data['title']}\n***\n{data['url']}\n***\n{data['date']}\n{data['address']}\n{data['description']}\n{data['price']}\n{data['number']}\n\n", "-"*80
-        print(info)
-        # f.write()
+    # with open('avito.txt', 'a', encoding="utf-8") as f:
+    #     info = f"Заголовок: {data['title']}\nURL: {data['url']}\n" \
+    #            f"Дата публикации: {data['date']}\nАдрес: " \
+    #            f"{data['address']}\nОписание: {data['description']}\n" \
+    #            f"Цена: {data['price']}\n" \
+    #            f"Номер: {data['number']}\n******\n\n"
+    #     # print(info)
+    #     f.write(info)
+
+    with open('avito.csv', 'a', encoding="utf-8") as f:
+        writer = csv.writer(f);
+        writer.writerow((data['title'], data['url'], data['date'],
+                         data['address'], data['description'], data['price'], data['number']))
 
 
 def get_page_data(html):
@@ -75,7 +84,7 @@ def get_page_data(html):
         try:
             price = ads.find('div', {"class": "description"}).find('div',
                                                                    {"class":
-                                                                        "address"}).find(
+                                                                        "about"}).find(
                 'span', {"class": "price"}).text.strip()
         except:
             price = ''
@@ -95,6 +104,7 @@ def get_page_data(html):
             "number": number
         }
 
+        # print(price)
         write_file(data)
 
 
