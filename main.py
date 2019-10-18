@@ -21,19 +21,14 @@ def get_total_pages(html):
 
 
 def write_file(data):
-    # with open('avito.txt', 'a', encoding="utf-8") as f:
-    #     info = f"Заголовок: {data['title']}\nURL: {data['url']}\n" \
-    #            f"Дата публикации: {data['date']}\nАдрес: " \
-    #            f"{data['address']}\nОписание: {data['description']}\n" \
-    #            f"Цена: {data['price']}\n" \
-    #            f"Номер: {data['number']}\n******\n\n"
-    #     # print(info)
-    #     f.write(info)
-
     with open('avito.csv', 'a', encoding="utf-8") as f:
         writer = csv.writer(f);
         writer.writerow((data['title'], data['url'], data['date'],
                          data['address'], data['description'], data['price'], data['number']))
+
+
+def get_detail_page_data(html):
+    pass
 
 
 def get_page_data(html):
@@ -73,11 +68,8 @@ def get_page_data(html):
             address = ''
 
         try:
-            description = ads.find('div', {"class": "description"}).find('a',
-                                                                         {
-                                                                             "class":
-                                                                                 "item_table-extended-description"}).find(
-                'span', {"class": "item_table-item-param-label"}).text.strip()
+            description_url = get_html(url)
+
         except:
             description = ''
 
@@ -109,16 +101,38 @@ def get_page_data(html):
 
 
 def main():
-    url = 'https://www.avito.ru/krasnodar/kvartiry/sdam/posutochno/1' \
-          '-komnatnye?p=1'
-    base_url = 'https://www.avito.ru/krasnodar/kvartiry/sdam/posutochno/1-komnatnye?'
+
+    price_max = int(input('масимальная цена: '))
+    district = input('предпочитаемый район: ')
+
+    if (district.lower() == 'западный'):
+        district = 359
+    elif (district.lower() == 'карасунский'):
+        district = 360
+    elif (district.lower() == 'прикубанский'):
+        district = 361
+    elif (district.lower() == 'старокорсунская'):
+        district = 547
+    elif (district.lower() == 'центральный'):
+        district = 362
+    else:
+        district=''
+
+    params = {
+        "price_max": str(price_max),
+        'district': district
+    }
+
+    base_url = 'https://www.avito.ru/krasnodar/kvartiry/sdam/posutochno/?'
     page_part = 'p='
+    query_params = f'pmax={params["price_max"]}&district={params["district"]}'
+    url = f'https://www.avito.ru/krasnodar/kvartiry/sdam/posutochno/?{query_params}'
 
     total_pages = get_total_pages(get_html(url))
 
     # back total_pages+1
     for i in range(1, 3):
-        url_gen = base_url + page_part + str(i)
+        url_gen = base_url + page_part + str(i) + '&' + query_params
         html = get_html(url_gen)
         get_page_data(html)
 
