@@ -28,7 +28,11 @@ def write_file(data):
 
 
 def get_detail_page_data(html):
-    pass
+
+    html = get_html(html)
+    detail_soup = BeautifulSoup(html, 'lxml')
+
+#     ищем desciption и number
 
 
 def get_page_data(html):
